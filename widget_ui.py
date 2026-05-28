@@ -19,9 +19,7 @@ class FetchDataThread(QThread):
 class FloatingWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self._dragging = False
         self.initUI()
-        self._install_drag_filter(self.container)
         self.refresh_data()
 
         # Timer to auto-refresh data if app is left open
@@ -30,31 +28,22 @@ class FloatingWidget(QWidget):
         # Refresh every 12 hours just in case
         self.timer.start(12 * 60 * 60 * 1000)
 
-        self.oldPos = self.pos()
-
     def initUI(self):
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool | Qt.WindowType.WindowStaysOnTopHint)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.resize(300, 250)
-
-        # Main layout
-        layout = QVBoxLayout()
-        layout.setContentsMargins(15, 15, 15, 15)
-
-        # Container widget for styling
-        self.container = QWidget()
-        self.container.setObjectName("container")
-        self.container.setStyleSheet("""
-            QWidget#container {
-                background-color: rgba(30, 30, 30, 220);
-                border-radius: 15px;
-                border: 1px solid rgba(255, 255, 255, 50);
+        self.setWindowTitle("💵 Forex Tracker")
+        self.resize(320, 280)
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #1E1E1E;
+                color: white;
             }
             QLabel {
                 color: white;
             }
         """)
-        container_layout = QVBoxLayout(self.container)
+
+        # Main layout
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(15, 15, 15, 15)
 
         # Header
         header_layout = QHBoxLayout()
@@ -80,31 +69,10 @@ class FloatingWidget(QWidget):
         """)
         self.refresh_btn.clicked.connect(self.refresh_data)
         
-        # Close button
-        self.close_btn = QPushButton("×")
-        self.close_btn.setFixedSize(25, 25)
-        self.close_btn.setStyleSheet("""
-            QPushButton {
-                background-color: transparent;
-                color: #F44336;
-                font-weight: bold;
-                font-size: 16px;
-                border: none;
-            }
-            QPushButton:hover {
-                color: #E57373;
-            }
-            QPushButton:pressed {
-                color: #D32F2F;
-            }
-        """)
-        self.close_btn.clicked.connect(self.close)
-
         header_layout.addWidget(title)
         header_layout.addStretch()
         header_layout.addWidget(self.refresh_btn)
-        header_layout.addWidget(self.close_btn)
-        container_layout.addLayout(header_layout)
+        layout.addLayout(header_layout)
 
         # Rates layout
         self.hdfc_label = QLabel("HDFC: Loading...")
@@ -112,8 +80,8 @@ class FloatingWidget(QWidget):
         self.axis_label = QLabel("Axis: Loading...")
         self.axis_label.setFont(QFont("Segoe UI", 10))
         
-        container_layout.addWidget(self.hdfc_label)
-        container_layout.addWidget(self.axis_label)
+        layout.addWidget(self.hdfc_label)
+        layout.addWidget(self.axis_label)
 
         # Graph
         self.graphWidget = pg.PlotWidget()
@@ -134,10 +102,7 @@ class FloatingWidget(QWidget):
 
         self.graphWidget.scene().sigMouseMoved.connect(self.on_mouse_moved)
         
-        container_layout.addWidget(self.graphWidget)
-
-        layout.addWidget(self.container)
-        self.setLayout(layout)
+        layout.addWidget(self.graphWidget)
 
     def refresh_data(self):
         self.refresh_btn.setEnabled(False)
@@ -271,30 +236,6 @@ class FloatingWidget(QWidget):
         # Hide if out of bounds
         self.tooltip.setVisible(False)
         self.hover_line.setVisible(False)
-
-    # Allow dragging from anywhere on the widget, including child widgets
-    def _install_drag_filter(self, widget):
-        """Recursively install event filter on all child widgets for drag support."""
-        widget.installEventFilter(self)
-        for child in widget.findChildren(QWidget):
-            # Skip buttons so they remain clickable
-            if not isinstance(child, QPushButton):
-                child.installEventFilter(self)
-
-    def eventFilter(self, obj, event):
-        if event.type() == event.Type.MouseButtonPress and event.button() == Qt.MouseButton.LeftButton:
-            self._dragging = True
-            self.oldPos = event.globalPosition().toPoint()
-            return True
-        elif event.type() == event.Type.MouseMove and self._dragging:
-            delta = QPoint(event.globalPosition().toPoint() - self.oldPos)
-            self.move(self.x() + delta.x(), self.y() + delta.y())
-            self.oldPos = event.globalPosition().toPoint()
-            return True
-        elif event.type() == event.Type.MouseButtonRelease and event.button() == Qt.MouseButton.LeftButton:
-            self._dragging = False
-            return True
-        return super().eventFilter(obj, event)
 
 if __name__ == '__main__':
     # Initialize DB before running
