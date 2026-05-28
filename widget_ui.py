@@ -1,12 +1,17 @@
 import sys
+import os
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt, QTimer, QPoint, QThread, pyqtSignal
-from PyQt6.QtGui import QFont, QColor
+from PyQt6.QtGui import QFont, QColor, QIcon, QPixmap
 import pyqtgraph as pg
 import datetime
 
 import data_manager
 import scraper
+
+# Resolve absolute path for assets relative to script location
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ICON_PATH = os.path.join(BASE_DIR, "usd_icon.png")
 
 class FetchDataThread(QThread):
     finished = pyqtSignal(object, object)
@@ -29,8 +34,9 @@ class FloatingWidget(QWidget):
         self.timer.start(12 * 60 * 60 * 1000)
 
     def initUI(self):
-        self.setWindowTitle("💵 Forex Tracker")
-        self.resize(320, 280)
+        self.setWindowTitle("Forex Tracker")
+        self.setWindowIcon(QIcon(ICON_PATH))
+        self.resize(340, 320)
         self.setStyleSheet("""
             QWidget {
                 background-color: #1E1E1E;
@@ -47,7 +53,15 @@ class FloatingWidget(QWidget):
 
         # Header
         header_layout = QHBoxLayout()
-        title = QLabel("💵 USD Buy Rate")
+        header_layout.setSpacing(8)
+        
+        # Golden USD Coin Icon in Header
+        self.icon_label = QLabel()
+        pixmap = QPixmap(ICON_PATH).scaled(22, 22, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.icon_label.setPixmap(pixmap)
+        self.icon_label.setFixedSize(22, 22)
+        
+        title = QLabel("USD Buy Rate")
         title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
                 
         self.refresh_btn = QPushButton("⟳")
@@ -69,45 +83,63 @@ class FloatingWidget(QWidget):
         """)
         self.refresh_btn.clicked.connect(self.refresh_data)
         
+        header_layout.addWidget(self.icon_label)
         header_layout.addWidget(title)
         header_layout.addStretch()
         header_layout.addWidget(self.refresh_btn)
         layout.addLayout(header_layout)
 
-        # Rates layout
-        self.hdfc_label = QLabel("HDFC: Loading...")
-        self.hdfc_label.setFont(QFont("Segoe UI", 10))
-        self.axis_label = QLabel("Axis: Loading...")
-        self.axis_label.setFont(QFont("Segoe UI", 10))
-        
-        layout.addWidget(self.hdfc_label)
-        layout.addWidget(self.axis_label)
-
-        # Graph
+        # Graph (increased height from 150 to 190 to take advantage of the freed vertical space)
         self.graphWidget = pg.PlotWidget()
         self.graphWidget.setBackground('transparent')
         self.graphWidget.getAxis('left').setPen('w')
         self.graphWidget.getAxis('left').setTextPen('w')
         self.graphWidget.getAxis('bottom').setPen('w')
         self.graphWidget.getAxis('bottom').setTextPen('w')
-        self.graphWidget.setFixedHeight(150)
+        self.graphWidget.setMinimumHeight(180)
+        self.graphWidget.showGrid(x=True, y=True, alpha=0.15)  # Enable subtle gridlines
         self.graphWidget.addLegend(offset=(5, 5))
         
         # Hover indicator line and tooltip text item
         self.hover_line = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen(color=(255, 255, 255, 80), width=1, style=Qt.PenStyle.DashLine))
         self.hover_line.setVisible(False)
         
-        self.tooltip = pg.TextItem(html="", fill=QColor(30, 30, 30, 51), border=pg.mkPen(255, 255, 255, 50))
+        self.tooltip = pg.TextItem(html="")
         self.tooltip.setVisible(False)
 
         self.graphWidget.scene().sigMouseMoved.connect(self.on_mouse_moved)
         
         layout.addWidget(self.graphWidget)
 
+        # Footer Layout with 3 Sections
+        footer_layout = QHBoxLayout()
+        footer_layout.setContentsMargins(0, 10, 0, 0)
+        
+        self.footer_coded_by = QLabel("Coded by Kaustav Das")
+        self.footer_coded_by.setFont(QFont("Segoe UI", 8, QFont.Weight.Medium))
+        self.footer_coded_by.setStyleSheet("color: #888888;")
+        self.footer_coded_by.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        
+        self.footer_hdfc = QLabel("HDFC: Loading...")
+        self.footer_hdfc.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
+        self.footer_hdfc.setStyleSheet("color: #90CAF9;")
+        self.footer_hdfc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        self.footer_axis = QLabel("Axis: Loading...")
+        self.footer_axis.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
+        self.footer_axis.setStyleSheet("color: #F48FB1;")
+        self.footer_axis.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        
+        footer_layout.addWidget(self.footer_coded_by, 2)
+        footer_layout.addWidget(self.footer_hdfc, 1)
+        footer_layout.addWidget(self.footer_axis, 1)
+        
+        layout.addLayout(footer_layout)
+
     def refresh_data(self):
         self.refresh_btn.setEnabled(False)
-        self.hdfc_label.setText("HDFC: Fetching...")
-        self.axis_label.setText("Axis: Fetching...")
+        self.footer_hdfc.setText("HDFC: Fetching...")
+        self.footer_axis.setText("Axis: Fetching...")
         
         self.fetch_thread = FetchDataThread()
         self.fetch_thread.finished.connect(self.on_data_fetched)
@@ -116,15 +148,15 @@ class FloatingWidget(QWidget):
     def on_data_fetched(self, hdfc_rate, axis_rate):
         if hdfc_rate:
             data_manager.save_rate("HDFC", "USD", hdfc_rate)
-            self.hdfc_label.setText(f"HDFC: ₹{hdfc_rate:.2f}")
+            self.footer_hdfc.setText(f"HDFC: ₹{hdfc_rate:.2f}")
         else:
-            self.hdfc_label.setText("HDFC: Error")
+            self.footer_hdfc.setText("HDFC: Error")
 
         if axis_rate:
             data_manager.save_rate("Axis", "USD", axis_rate)
-            self.axis_label.setText(f"Axis: ₹{axis_rate:.2f}")
+            self.footer_axis.setText(f"Axis: ₹{axis_rate:.2f}")
         else:
-            self.axis_label.setText("Axis: Error")
+            self.footer_axis.setText("Axis: Error")
 
         self.update_graph()
         self.refresh_btn.setEnabled(True)
@@ -192,9 +224,9 @@ class FloatingWidget(QWidget):
                 except Exception:
                     day_month = date_str
                     
-                # Format tooltip HTML with vertical alignment
-                html = f"<div style='padding: 5px; font-family: Segoe UI; font-size: 8pt; color: white; line-height: 1.3;'>"
-                html += f"<div style='text-align: center; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,50); padding-bottom: 2px; margin-bottom: 4px;'>{day_month}</div>"
+                # Format tooltip HTML with vertical alignment and solid HTML background styling
+                html = f"<div style='background-color: #282828; border: 1px solid rgba(255,255,255,100); border-radius: 4px; padding: 6px; font-family: Segoe UI; font-size: 8pt; color: white; line-height: 1.05; text-align: center;'>"
+                html += f"<b>{day_month}</b><br>"
                 if hdfc_rate is not None:
                     html += f"<span style='color: #90CAF9;'>HDFC: ₹{hdfc_rate:.2f}</span><br>"
                 else:

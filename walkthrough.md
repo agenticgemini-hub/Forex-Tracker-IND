@@ -2,7 +2,15 @@
 
 ## What the Application Does
 
-This is a **Windows desktop widget** that tracks the daily **USD → INR "CCY Buy" exchange rate** from two Indian banks — **HDFC Bank** and **Axis Bank** — and displays it as a small, always-visible, frameless floating window on your desktop.
+This is a modern **Windows desktop GUI application** that tracks the daily **USD → INR "CCY Buy" exchange rate** from **HDFC Bank** and **Axis Bank** and displays it as a beautiful, high-information desktop window.
+
+## GUI Interface Elements
+
+````carousel
+![Main GUI Interface](C:\Users\kaust\.gemini\antigravity-ide\brain\79caf0b5-bb29-4bf1-b8b7-77d80617bed6\gui_screenshot_1779985901302.png)
+<!-- slide -->
+![Interactive Hover Tooltip](C:\Users\kaust\.gemini\antigravity-ide\brain\79caf0b5-bb29-4bf1-b8b7-77d80617bed6\tooltip_screenshot_1779985921282.png)
+````
 
 ### Architecture (4 files)
 
@@ -42,17 +50,21 @@ The database file path is resolved as an **absolute path** relative to the scrip
 
 ---
 
-#### 3. [widget_ui.py](widget_ui.py) — PyQt6 Desktop Widget
+#### 3. [widget_ui.py](widget_ui.py) — PyQt6 Desktop GUI
 
-This is the main entry point. It creates a **frameless, translucent, draggable floating window** that:
+This is the main entry point. It creates a **modern desktop window GUI with standard OS controls** that:
 
-- Shows today's HDFC and Axis USD buy rates as text labels
-- Renders a **trend graph** (via `pyqtgraph`) with the last 30 days of data
-- Has a **refresh button** (⟳) to re-fetch rates on demand
-- Has a **close button** (×)
-- Auto-refreshes every **12 hours** via `QTimer`
-- Uses `WindowStaysOnBottomHint` so it behaves like a desktop widget (sits behind other windows)
-- Data fetching runs on a **background `QThread`** so the UI never freezes
+- **Custom USD App Icon**: Loaded directly into the OS title bar next to the window title.
+- **Dynamic Resize Auto-Scale**: The trend graph automatically scales and expands vertically to fill the layout when the window is maximized or resized.
+- **Interactive Mouse Hover Tooltips**: Displays a snapped vertical indicator line and a highly readable 3-line dark HTML box containing the date, HDFC's rate, and Axis's rate for the hovered coordinate.
+- **Dynamic Tooltip Anchoring**: Shifts the tooltip box *below* high spike data points to prevent clipping at the top of the canvas, and *above* low data points.
+- **Horizontal 3-Section Footer**: Pins a modern three-column footer at the bottom with a custom stretch distribution of `2:1:1` to prevent text clipping:
+  - Left column: Author credit `"Coded by Kaustav Das"` (gray, left-aligned, vertically centered).
+  - Center column: Live HDFC daily rate (blue, centered, vertically centered).
+  - Right column: Live Axis daily rate (pink, right-aligned, vertically centered).
+- **Time-Series Data Alignment**: Aligns HDFC and Axis plot points mathematically by their actual calendar dates on a shared index system.
+- **Auto-Refreshes**: Refreshes rate data every **12 hours** via `QTimer`.
+- **Background Fetching**: Runs Web scraping tasks on a background `QThread` to keep the UI fluid and responsive.
 
 ---
 

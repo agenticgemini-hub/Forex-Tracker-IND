@@ -1,6 +1,6 @@
-# 💵 Forex Tracker Widget
+# 💵 Forex Tracker GUI
 
-A minimalist, floating Windows desktop widget that tracks the daily **USD → INR "CCY Buy"** exchange rate from **HDFC Bank** and **Axis Bank**.
+A minimalist desktop application that tracks the daily **USD → INR "CCY Buy"** exchange rate from **HDFC Bank** and **Axis Bank** and renders it in a beautiful, modern window.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
@@ -10,12 +10,16 @@ A minimalist, floating Windows desktop widget that tracks the daily **USD → IN
 
 ## Features
 
-- Scrapes live USD buy rates from HDFC Bank (PDF) and Axis Bank (HTML)
-- Stores daily history in a local SQLite database
-- Displays a 30-day trend graph
-- Frameless, translucent, always-on-top draggable widget
-- Auto-refreshes every 12 hours
-- Optional Windows startup shortcut
+- **Standard Window GUI**: Renders as a modern desktop window with standard OS title bars, minimizing, and closing controls.
+- **Custom USD Icon**: Custom golden USD coin vector image loaded directly as the title bar window icon.
+- **Dynamic Chart Auto-Scale**: Resizing or maximizing the window automatically expands the graph layout to fill the screen natively.
+- **Interactive Mouse Hover Tooltips**: Moving the mouse over the graph shows a vertical snapped indicator line and a highly readable 3-line dark HTML box showing the date, HDFC's rate, and Axis's rate for that day.
+- **Dynamic Tooltip Placement**: Tooltip automatically anchors *below* peak data points (spikes) to avoid window clipping, and *above* low data points.
+- **3-Section Status Footer**: Pinns a modern three-column footer at the bottom (Author Credit, live HDFC rate, live Axis rate) with custom color-coding matching the chart lines.
+- **Optimized Graph Canvas**: Removed body labels to maximize vertical drawing space for the trend graph.
+- **Time-Series Data Alignment**: Aligns HDFC and Axis rates mathematically by their actual calendar dates on a shared index system, so they line up perfectly on vertical gridlines even when days are missing in the database.
+- **Automatic Scraping**: Auto-refreshes every 12 hours.
+- **SQLite Database Persistence**: Stores historical rates in `forex_data.db`.
 
 ---
 
@@ -107,7 +111,7 @@ python widget_ui.py
 .\venv\Scripts\pythonw.exe widget_ui.py
 ```
 
-The widget will appear as a small floating window on your screen.
+The application will launch as a standard desktop window on your screen.
 
 ---
 
@@ -115,9 +119,10 @@ The widget will appear as a small floating window on your screen.
 
 | Action | How |
 |---|---|
-| **Move the widget** | Click and drag anywhere on the widget |
-| **Refresh rates** | Click the green **⟳** button |
-| **Close the widget** | Click the red **×** button |
+| **Move the window** | Drag using the standard operating system window title bar |
+| **Refresh rates** | Click the green **⟳** button in the header |
+| **Minimize / Maximize / Close** | Use standard native OS title bar window controls |
+| **View rate details** | Hover your mouse cursor over any data point on the graph to display the interactive tooltip |
 
 ---
 
