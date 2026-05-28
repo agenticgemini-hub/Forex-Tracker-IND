@@ -6,6 +6,12 @@ A minimalist desktop application that tracks the daily **USD → INR "CCY Buy"**
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![UI](https://img.shields.io/badge/UI-PyQt6-green)
 
+## Preview
+
+![Main GUI Interface](gui_screenshot.png)
+
+![Interactive Hover Tooltip](tooltip_screenshot.png)
+
 ---
 
 ## Features

@@ -7,9 +7,9 @@ This is a modern **Windows desktop GUI application** that tracks the daily **USD
 ## GUI Interface Elements
 
 ````carousel
-![Main GUI Interface](C:\Users\kaust\.gemini\antigravity-ide\brain\79caf0b5-bb29-4bf1-b8b7-77d80617bed6\gui_screenshot_1779985901302.png)
+![Main GUI Interface](gui_screenshot.png)
 <!-- slide -->
-![Interactive Hover Tooltip](C:\Users\kaust\.gemini\antigravity-ide\brain\79caf0b5-bb29-4bf1-b8b7-77d80617bed6\tooltip_screenshot_1779985921282.png)
+![Interactive Hover Tooltip](tooltip_screenshot.png)
 ````
 
 ### Architecture (4 files)
