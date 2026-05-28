@@ -26,37 +26,65 @@ A minimalist, floating Windows desktop widget that tracks the daily **USD → IN
 
 ---
 
-## Setup (First Time Only)
+## Setup & Installation
 
-### 1. Create a Virtual Environment
+### 1. Clone the Repository
 
-Open a terminal in the project folder and run:
+Open a terminal or command prompt and clone the repository:
 
-```powershell
-cd "D:\Documents\Python Projects\Forex Tracker"
-python -m venv venv
+```bash
+git clone https://github.com/agenticgemini-hub/Forex-Tracker-IND.git
+cd Forex-Tracker-IND
 ```
 
-### 2. Activate the Virtual Environment
+### 2. Create a Virtual Environment
 
-```powershell
-.\venv\Scripts\Activate
-```
+Create a virtual environment to manage dependencies locally:
 
-### 3. Install Dependencies
+* **Windows**:
+  ```powershell
+  python -m venv venv
+  ```
+* **macOS/Linux**:
+  ```bash
+  python3 -m venv venv
+  ```
 
-```powershell
+### 3. Activate the Virtual Environment
+
+Activate the environment based on your platform:
+
+* **Windows (PowerShell)**:
+  ```powershell
+  .\venv\Scripts\Activate
+  ```
+* **Windows (CMD)**:
+  ```cmd
+  .\venv\Scripts\activate.bat
+  ```
+* **macOS/Linux**:
+  ```bash
+  source venv/bin/activate
+  ```
+
+### 4. Install Dependencies
+
+Install the required Python packages:
+
+```bash
 pip install PyQt6 pyqtgraph requests beautifulsoup4 pdfplumber
 ```
 
-> **Optional** — If you want the startup shortcut feature:
+> **Optional** — If you want the automatic Windows startup shortcut feature:
 > ```powershell
 > pip install winshell pywin32
 > ```
 
-### 4. Initialize the Database
+### 5. Initialize the Database
 
-```powershell
+Initialize the local SQLite database by running:
+
+```bash
 python data_manager.py
 ```
 
