@@ -19,7 +19,7 @@ graph LR
 
 ### File-by-File Breakdown
 
-#### 1. [scraper.py](file:///d:/Documents/Python%20Projects/Forex%20Tracker/scraper.py) — Web Scraping
+#### 1. [scraper.py](scraper.py) — Web Scraping
 
 | Function | Source | Method |
 |---|---|---|
@@ -30,7 +30,7 @@ Both functions return a `float` on success or `None` on failure.
 
 ---
 
-#### 2. [data_manager.py](file:///d:/Documents/Python%20Projects/Forex%20Tracker/data_manager.py) — SQLite Persistence
+#### 2. [data_manager.py](data_manager.py) — SQLite Persistence
 
 | Function | Purpose |
 |---|---|
@@ -42,7 +42,7 @@ The database file path is resolved as an **absolute path** relative to the scrip
 
 ---
 
-#### 3. [widget_ui.py](file:///d:/Documents/Python%20Projects/Forex%20Tracker/widget_ui.py) — PyQt6 Desktop Widget
+#### 3. [widget_ui.py](widget_ui.py) — PyQt6 Desktop Widget
 
 This is the main entry point. It creates a **frameless, translucent, draggable floating window** that:
 
@@ -56,7 +56,7 @@ This is the main entry point. It creates a **frameless, translucent, draggable f
 
 ---
 
-#### 4. [create_startup_shortcut.py](file:///d:/Documents/Python%20Projects/Forex%20Tracker/create_startup_shortcut.py) — Windows Startup
+#### 4. [create_startup_shortcut.py](create_startup_shortcut.py) — Windows Startup
 
 Creates a `.lnk` shortcut in the Windows Startup folder pointing to `venv\Scripts\pythonw.exe` (the silent/no-console Python) running `widget_ui.py`. This makes the widget launch automatically on login.
 
